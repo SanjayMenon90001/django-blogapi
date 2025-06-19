@@ -35,3 +35,31 @@ A RESTful Blog API built using **Django** and **Django REST Framework** that sup
 - factory_boy (for test data generation)
 
 ---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repository
+
+git clone https://github.com/SanjayMenon90001/django-blogapi.git
+cd django-blogapi
+
+### 2.Create and Activate a Virtual Environment
+
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+### 3. Install Requirements
+
+pip install -r requirements.txt
+
+### 4. Apply Migrations and Create Superuser
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+
+### 5. Run the Server
+
+python manage.py runserver
+
+

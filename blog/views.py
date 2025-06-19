@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
 from blog.permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import viewsets, permissions
 from blog.models import Post, Comment
 from blog.serializers import PostSerializer, CommentSerializer
@@ -10,7 +11,7 @@ from blog.serializers import PostSerializer, CommentSerializer
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['author', 'title']
 

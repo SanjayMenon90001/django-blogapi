@@ -23,3 +23,5 @@ Thumbs.db
 #environment variables
 .env
 .env.template
+settings.toml
+.gitignore

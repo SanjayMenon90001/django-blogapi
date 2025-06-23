@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.text import slugify
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -7,7 +8,6 @@ from blog.models import Comment, Post
 # Create your views here.
 from blog.permissions import IsOwnerOrReadOnly
 from blog.serializers import CommentSerializer, PostSerializer
-from django.utils.text import slugify
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -31,11 +31,13 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
 from django.contrib.auth.models import User
-from .models import Post, Comment
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import Comment, Post
+
 
 class AdminAuthorPostSummary(APIView):
     permission_classes = [IsAdminUser]  # Only superusers can access

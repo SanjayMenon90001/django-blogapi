@@ -3,6 +3,9 @@ from django.utils.text import slugify
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 
 from blog.models import Comment, Post
 # Create your views here.
@@ -22,6 +25,17 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    @action(detail=True, methods=['get'], url_path='comments', permission_classes=[IsAdminUser])
+    def comments(self, request, slug=None):
+        post = self.get_object()
+        comments = Comment.objects.filter(post=post)
+        serializer = CommentSerializer(comments, many=True)
+        return Response({
+            "post_id": post.id,
+            "comments": serializer.data,
+            "total_comments": comments.count()
+        })
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -31,38 +45,4 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-from django.contrib.auth.models import User
-from rest_framework.permissions import IsAdminUser
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from .models import Comment, Post
-
-
-class AdminAuthorPostSummary(APIView):
-    permission_classes = [IsAdminUser]  # Only superusers can access
-
-    def get(self, request):
-        author_username = request.query_params.get('author')
-        if not author_username:
-            return Response({"error": "Author username is required."}, status=400)
-
-        try:
-            author = User.objects.get(username=author_username)
-        except User.DoesNotExist:
-            return Response({"error": "Author not found"}, status=404)
-        posts = Post.objects.filter(author=author)
-        result = []
-        for post in posts:
-            comments = Comment.objects.filter(post=post)
-            comment_data = [
-                {"commented_user": c.author.username, "comment": c.content}
-                for c in comments
-            ]
-            result.append({
-                "post_id": post.slug,
-                "title": post.title,
-                "comments": comment_data,
-                "total_comments": comments.count()
-            })
-        return Response(result)

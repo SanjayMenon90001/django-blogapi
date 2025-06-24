@@ -17,6 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from blog.views import PostViewSet,CommentViewSet
 
 urlpatterns = [
     path("admin/", admin.site.urls),
